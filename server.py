@@ -1,5 +1,4 @@
 import socket
-
 import getopt
 import sys
 
@@ -23,17 +22,50 @@ def main():
     if (port == ''):
         port = 8080
 
-    print('Port: ', port)
-
+    print('Defined Port: ', port)
+  
     start_server(port)
 
 
 def start_server(PORT):
-    Handler = http.server.SimpleHTTPRequestHandler
+    print('Starting server...')
+  
+    HOST = None # Symbolic name meaning all available interfaces
+    s = None    # socket
+    
+    for res in socket.getaddrinfo(
+      HOST, PORT, socket.AF_UNSPEC,
+      socket.SOCK_STREAM, 0, socket.AI_PASSIVE
+    ):
+      af, socktype, proto, canonname, sa = res
+      try:
+        s = socket.socket(af, socktype, proto)
+      except OSError as msg:
+        s = None
+        continue
+      try:
+        s.bind(sa)
+        s.listen(1)
+      except OSError as msg:
+        s.close()
+        s = None
+        continue
+      break
 
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print("serving at port", PORT)
-        httpd.serve_forever()
+    if s is None:
+      print('Could not open socket.')
+      sys.exit(1)
 
+    print('Server ready for connections.')
+
+    conn, addr = s.accept()
+    with conn:
+      print('Connected by', addr)
+
+      while True:
+        data = conn.recv(1024)
+     
+        if not data: break
+          conn.send(data)
 
 main()
