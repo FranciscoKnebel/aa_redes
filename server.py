@@ -76,6 +76,7 @@ def start_server(PORT):
           select.select([conn,], [conn,], [], 5)
       except select.error:
         conn.shutdown(2)
+        conn.close()
         break
 
       if len(ready_to_read) > 0:
@@ -83,11 +84,8 @@ def start_server(PORT):
 
         count += len(data)
         print(count)
-        
         del data
-        continue
 
-    conn.close()
     endtime = datetime.datetime.now()
 
     print('Closed connection.')
