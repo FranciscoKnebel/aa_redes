@@ -7,8 +7,9 @@ BUFSIZE = 1455
 
 def main():
     port = ''
+    logfile = ''
     try:
-      opts, args = getopt.getopt(sys.argv[1:],'hp:v',['help', 'port='])
+      opts, args = getopt.getopt(sys.argv[1:],'hp:v',['help', 'port=', 'output='])
     except getopt.GetoptError as err:
       print('server.py -p <port>')
       print(err)
@@ -20,12 +21,17 @@ def main():
         sys.exit()
       elif opt in ('-p', '--port'):
         port = arg
+      elif opt in ('-o', '--output'):
+        logfile = arg
 
     if (port == ''):
       port = 8080
 
+    if (logfile == ''):
+      logfile = 'output.txt'
+
     print('Defined Port:', port)
-    start_server(port)
+    start_server(port, logfile)
 
 
 def get_host():
@@ -40,7 +46,7 @@ def get_host():
     s.close()
   return IP
 
-def start_server(PORT):
+def start_server(PORT, LOG_NAME):
   HOSTNAME = get_host()
   CONNECTION_LOCATION = HOSTNAME + ':' + str(PORT)
 
@@ -65,6 +71,10 @@ def start_server(PORT):
   print('Server ready for connections on', CONNECTION_LOCATION)
 
   conn, addr = s.accept()
+
+  # Open logfile for writing throughput.
+  log = open(LOG_NAME, 'w')
+
   starttime = datetime.datetime.now()
 
   with conn:
@@ -74,6 +84,8 @@ def start_server(PORT):
     bytes_received = 0
     count = 0
     connection_open = True
+
+    t1 = datetime.datetime.now()
     while (connection_open):
       data = conn.recv(BUFSIZE)
 
@@ -89,10 +101,23 @@ def start_server(PORT):
         count = count + 1
         bytes_received += len(data)
         del data
+        
+        t2 = datetime.datetime.now()
+        delta = t2 - t1
+        delta = delta.seconds + delta.microseconds / 1000000.0
+	      
+        if (delta >= 1):
+	        throughput = bytes_received * 8 / delta;
+	        
+	        print('Throughtput:', throughput)
 
-    exit_procedure(count, starttime, datetime.datetime.now())
+	        log.write(str(throughput) + '\n')
+	        bytes_received = 0
+	        t1 = datetime.datetime.now()
 
-def exit_procedure(count, starttime, endtime):
+    exit_procedure(count, starttime, datetime.datetime.now(), log)
+
+def exit_procedure(count, starttime, endtime, logfile):
   print('Closed connection.')
 
   print('Bytes transferred:', count * BUFSIZE)
@@ -100,6 +125,10 @@ def exit_procedure(count, starttime, endtime):
   delta = delta.seconds + delta.microseconds / 1000000.0
   print('Time used (seconds): %f' % delta)
   print('Averaged speed (MB/s): %f\n\r' % (count * BUFSIZE / 1024 / 1024 / delta))
+
+  logfile.write('\n\nTime used: ' + str(delta))
+  logfile.write('\nAverage speed: ' + str((count * BUFSIZE * 8)/delta) + '\n')
+  logfile.close()
 
   sys.exit(0)
 
