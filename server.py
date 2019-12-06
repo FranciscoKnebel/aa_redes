@@ -1,6 +1,7 @@
 import socket
 import getopt
 import sys
+import datetime
 
 def main():
     port = ''
@@ -10,7 +11,7 @@ def main():
       print('server.py -p <port>')
       print(err)
       sys.exit(2)
-        
+
     for opt, arg in opts:
       if opt in ('-h', '--help'):
         print('server.py -p <port>')
@@ -22,7 +23,6 @@ def main():
       port = 8080
 
     print('Defined Port:', port)
-  
     start_server(port)
 
 
@@ -40,7 +40,7 @@ def get_host():
 
 def start_server(PORT):
   HOSTNAME = get_host()
-  CONNECTION_LOCATION = HOSTNAME + ':' + PORT
+  CONNECTION_LOCATION = HOSTNAME + ':' + str(PORT)
 
   print('Starting server on port', PORT)
   print('Host', HOSTNAME)
@@ -75,14 +75,30 @@ def start_server(PORT):
   print('Server ready for connections on', CONNECTION_LOCATION)
 
   conn, addr = s.accept()
+  starttime = datetime.datetime.now()
+
   with conn:
     print('Connected by', addr)
 
+    count = 0
     while True:
       data = conn.recv(1024)
-    
-      if not data:
-        break
-      conn.send(data)
+      
+      if data:
+        count += len(data)
+        del data
+        continue
+
+    conn.send('OK\n')
+    conn.close()
+    endtime = datetime.datetime.now()
+
+    print('Closed connection.')
+
+    print('bytes transferred: %d' % count)
+    delta = endtime - starttime
+    delta = delta.seconds + delta.microseconds / 1000000.0
+    print('time used (seconds): %f' % delta)
+    print('averaged speed (MB/s): %f\n\r' % (count / 1024 / 1024 / delta))
 
 main()

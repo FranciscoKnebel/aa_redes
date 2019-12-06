@@ -1,6 +1,7 @@
 import socket
 import getopt
 import sys
+import time
 
 def main():
     host = ''
@@ -40,11 +41,13 @@ def connect_to_server(HOST, PORT):
   for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
     af, socktype, proto, canonname, sa = res
     try:
+      print("Establishing socket...")
       s = socket.socket(af, socktype, proto)
     except OSError as msg:
       s = None
       continue
     try:
+      print("Trying to connect to server...")
       s.connect(sa)
     except OSError as msg:
       s.close()
@@ -53,13 +56,21 @@ def connect_to_server(HOST, PORT):
     break
 
   if s is None:
-    print('could not open socket')
+    print('Could not open socket')
     sys.exit(1)
-    
-  with s:
-    s.sendall(b'Hello, world')
-    data = s.recv(1024)
 
-  print('Received', repr(data))
+  print('Server connection successful.')
+  print('Starting to send data...')
+
+  data = bytearray(1024)
+
+  with s:
+    i = 0
+
+    for i in range(1, 100000):
+      i = i + 1
+      s.send(data)
+    
+    s.close()
 
 main()
