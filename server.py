@@ -51,8 +51,8 @@ def start_server(PORT):
   s = None    # socket
   try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, int(PORT)))
-    s.listen(1)
+    s.connect((HOST, int(PORT)))
+    # s.listen(1)
   except OSError as msg:
     s.close()
     s = None
