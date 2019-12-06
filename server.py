@@ -90,7 +90,7 @@ def start_server(PORT):
         bytes_received += len(data)
         del data
 
-    exit_procedure(count, starttime, endtime=datetime.datetime.now())
+    exit_procedure(count, starttime, datetime.datetime.now())
 
 def exit_procedure(count, starttime, endtime):
   print('Closed connection.')

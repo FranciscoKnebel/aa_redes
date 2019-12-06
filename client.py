@@ -91,7 +91,7 @@ def connect_to_server(HOST, PORT, LOG_NAME):
       logfile.write(i + ': ', throughput * 8, '\n')
     
     s.close()
-    exit_procedure(i, starttime, endtime=datetime.datetime.now(), logfile)
+    exit_procedure(i, starttime, datetime.datetime.now(), logfile)
 
 def exit_procedure(count, starttime, endtime, logfile):
   print('Closed connection.')
