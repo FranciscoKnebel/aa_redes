@@ -62,7 +62,7 @@ def connect_to_server(HOST, PORT):
   print('Server connection successful.')
   print('Starting to send data...')
 
-  data = bytearray(1024)
+  data = bytearray(4096)
 
   with s:
     i = 0

@@ -82,7 +82,7 @@ def start_server(PORT):
 
     count = 0
     while True:
-      data = conn.recv(1024)
+      data = conn.recv(4096)
       
       if data:
         count += len(data)
