@@ -70,13 +70,16 @@ def start_server(PORT):
     print('Connected by', addr)
 
     count = 0
-    while True:
+    connection_open = True
+    while (connection_open):
       try:
         ready_to_read, ready_to_write, in_error = \
           select.select([conn,], [conn,], [], 5)
       except select.error:
         conn.shutdown(2)
         conn.close()
+        ready_to_read = 0
+        connection_open = False
         break
 
       if len(ready_to_read) > 0:
