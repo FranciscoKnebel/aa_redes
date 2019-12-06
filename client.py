@@ -69,7 +69,7 @@ def connect_to_server(HOST, PORT):
 
     for i in range(0, 5):
       i = i + 1
-      s.send(data)
+      s.sendall(data)
       print(i)
     
     time.sleep(10)
