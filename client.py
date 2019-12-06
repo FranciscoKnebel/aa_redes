@@ -8,7 +8,7 @@ def main():
     port = ''
 
     try:
-      opts, args = getopt.getopt(sys.argv[1:], 'hp:v', ['help', 'port='])
+      opts, args = getopt.getopt(sys.argv[1:], 'hpn:v', ['help', 'port=', 'host='])
     except getopt.GetoptError as err:
       print('client.py <host> -p <port>')
       print(err)
@@ -16,19 +16,18 @@ def main():
 
     for opt, arg in opts:
       if opt in ['-h', '--help']:
-        print('client.py <host> -p <port>')
+        print('client.py -n <host> -p <port>')
         sys.exit(4)
-      elif opt in ("-p", "--port"):
+      elif opt in ('-p', '--port'):
         port = arg
-
-    if len(args) >= 1:
-      host = args[0]
-    else:
-      print('client.py <host>. Host is needed.')
-      sys.exit(3)
+      elif opt in ('-n', '--host'):
+        host = arg
 
     if (port == ''):
       port = 8080
+
+    if (host == ''):
+      host = '127.0.0.1'
 
     connect_to_server(host, port)
 
