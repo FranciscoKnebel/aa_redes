@@ -73,7 +73,7 @@ def start_server(PORT):
     count = 0
     connection_open = True
     while (connection_open):
-      data = conn.recv(4096)
+      data = conn.recv(1455)
 
       if len(data) == 0:
         connection_flag = connection_flag + 1
