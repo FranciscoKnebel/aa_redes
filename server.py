@@ -51,8 +51,8 @@ def start_server(PORT):
   s = None    # socket
   try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((HOST, int(PORT)))
-    # s.listen(1)
+    s.bind((HOST, int(PORT)))
+    s.listen(1)
   except OSError as msg:
     s.close()
     s = None
@@ -69,29 +69,27 @@ def start_server(PORT):
   with conn:
     print('Connected by', addr)
 
+    connection_flag = 0
     count = 0
     connection_open = True
     while (connection_open):
-      try:
-        ready_to_read, ready_to_write, in_error = \
-          select.select([conn,], [conn,], [], 5)
-      except select.error:
-        conn.shutdown(2)
-        conn.close()
-        ready_to_read = 0
-        connection_open = False
+      data = conn.recv(4096)
 
-        endtime = datetime.datetime.now()
-        exit_procedure(count, starttime, endtime)
-        break
+      if len(data) == 0:
+        connection_flag = connection_flag + 1
+
+        if connection_flag > 5:
+          conn.shutdown(2)
+          conn.close()
+          connection_open = False
       else:
-        if len(ready_to_read) > 0 and connection_open:
-          data = conn.recv(4096)
+        connection_flag = 0
+        count += len(data)
+        print(count)
+        del data
 
-          count += len(data)
-          print(count)
-          del data
-
+    endtime = datetime.datetime.now()
+    exit_procedure(count, starttime, endtime)
 
 def exit_procedure(count, starttime, endtime):
   print('Closed connection.')

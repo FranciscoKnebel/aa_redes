@@ -66,12 +66,10 @@ def connect_to_server(HOST, PORT):
   with s:
     i = 0
 
-    for i in range(0, 5):
+    for i in range(0, 100000):
       i = i + 1
       s.sendall(data)
-      print(i)
     
-    time.sleep(10)
     s.close()
 
 main()
