@@ -95,11 +95,11 @@ def start_server(PORT):
 def exit_procedure(count, starttime, endtime):
   print('Closed connection.')
 
-  print('Bytes transferred: %d' % count)
+  print('Bytes transferred: %d' % count * BUFSIZE)
   delta = endtime - starttime
   delta = delta.seconds + delta.microseconds / 1000000.0
   print('Time used (seconds): %f' % delta)
-  print('Averaged speed (MB/s): %f\n\r' % (count / 1024 / 1024 / delta))
+  print('Averaged speed (MB/s): %f\n\r' % (count * BUFSIZE / 1024 / 1024 / delta))
   print('Throughput:', round((BUFSIZE*count*0.001) / (delta), 3))
 
   sys.exit(0)
