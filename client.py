@@ -68,14 +68,16 @@ def connect_to_server(HOST, PORT):
   with s:
     i = 0
 
-    for i in range(0, 1000):
+    for i in range(0, 100000):
       i = i + 1
       s.sendall(data)
-      print(BUFSIZE * i)
+
+      delta = datetime.datetime.now() - starttime
+      delta = delta.seconds + delta.microseconds / 1000000.0
+      print('Throughput (K/s):', round((BUFSIZE*i*0.001) / (delta), 3))
     
     s.close()
     exit_procedure(i, starttime, endtime=datetime.datetime.now())
-
 
 def exit_procedure(count, starttime, endtime):
   print('Closed connection.')
@@ -85,6 +87,5 @@ def exit_procedure(count, starttime, endtime):
   delta = delta.seconds + delta.microseconds / 1000000.0
   print('Time used (seconds): %f' % delta)
   print('Averaged speed (MB/s): %f\n\r' % (count / 1024 / 1024 / delta))
-  print('Throughput:', round((BUFSIZE*count*0.001) / (delta), 3))
 
 main()
