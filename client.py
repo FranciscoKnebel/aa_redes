@@ -77,7 +77,7 @@ def connect_to_server(HOST, PORT, LOG_NAME):
     
     i = 0
 
-    for i in range(0, 10000):
+    for i in range(0, 100000):
       i = i + 1
       s.sendall(data)
 
@@ -88,7 +88,7 @@ def connect_to_server(HOST, PORT, LOG_NAME):
       print('Throughput (KB/s):', throughput)
 
       # Saving throughput to logfile, in bit/s
-      logfile.write(i + ': ', throughput * 8, '\n')
+      logfile.write(str(i) + ': ' + str(throughput * 8) + '\n')
     
     s.close()
     exit_procedure(i, starttime, datetime.datetime.now(), logfile)
@@ -102,8 +102,8 @@ def exit_procedure(count, starttime, endtime, logfile):
   print('Time used (seconds): %f' % delta)
   print('Averaged speed (MB/s): %f\n\r' % (count * BUFSIZE / 1024 / 1024 / delta))
 
-  logfile.write('\n\nTime used:', delta)
-  logfile.write('\nAverage speed:', (count * BUFSIZE * 8)/delta, '\n')
+  logfile.write('\n\nTime used: ' + str(delta))
+  logfile.write('\nAverage speed: ' + str((count * BUFSIZE * 8)/delta) + '\n')
   logfile.close()
 
 main()
