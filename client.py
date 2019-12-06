@@ -1,7 +1,9 @@
 import socket
 import getopt
 import sys
-import time
+import datetime
+
+BUFSIZE = 1455
 
 def main():
     host = ''
@@ -59,17 +61,30 @@ def connect_to_server(HOST, PORT):
     sys.exit(1)
 
   print('Server connection successful.')
-  print('Starting to send data...')
+  print('Sending data...')
 
-  data = bytearray(1455)
-
+  data = bytearray(BUFSIZE)
+  starttime = datetime.datetime.now()
   with s:
     i = 0
 
-    for i in range(0, 100000):
+    for i in range(0, 1000):
       i = i + 1
       s.sendall(data)
+      print(BUFSIZE * i)
     
     s.close()
+    exit_procedure(i, starttime, endtime=datetime.datetime.now())
+
+
+def exit_procedure(count, starttime, endtime):
+  print('Closed connection.')
+
+  print('Bytes transferred: %d' % count)
+  delta = endtime - starttime
+  delta = delta.seconds + delta.microseconds / 1000000.0
+  print('Time used (seconds): %f' % delta)
+  print('Averaged speed (MB/s): %f\n\r' % (count / 1024 / 1024 / delta))
+  print('Throughput:', round((BUFSIZE*count*0.001) / (delta), 3))
 
 main()

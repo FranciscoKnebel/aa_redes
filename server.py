@@ -2,7 +2,8 @@ import socket
 import getopt
 import sys
 import datetime
-import select
+
+BUFSIZE = 1455
 
 def main():
     port = ''
@@ -70,10 +71,11 @@ def start_server(PORT):
     print('Connected by', addr)
 
     connection_flag = 0
+    bytes_received = 0
     count = 0
     connection_open = True
     while (connection_open):
-      data = conn.recv(1455)
+      data = conn.recv(BUFSIZE)
 
       if len(data) == 0:
         connection_flag = connection_flag + 1
@@ -84,8 +86,8 @@ def start_server(PORT):
           connection_open = False
       else:
         connection_flag = 0
-        count += len(data)
-        print(count)
+        count = count + 1
+        bytes_received += len(data)
         del data
 
     endtime = datetime.datetime.now()
@@ -94,11 +96,12 @@ def start_server(PORT):
 def exit_procedure(count, starttime, endtime):
   print('Closed connection.')
 
-  print('bytes transferred: %d' % count)
+  print('Bytes transferred: %d' % count)
   delta = endtime - starttime
   delta = delta.seconds + delta.microseconds / 1000000.0
-  print('time used (seconds): %f' % delta)
-  print('averaged speed (MB/s): %f\n\r' % (count / 1024 / 1024 / delta))
+  print('Time used (seconds): %f' % delta)
+  print('Averaged speed (MB/s): %f\n\r' % (count / 1024 / 1024 / delta))
+  print('Throughput:', round((BUFSIZE*count*0.001) / (delta), 3))
 
   sys.exit(0)
 
