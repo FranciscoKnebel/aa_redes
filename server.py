@@ -74,6 +74,7 @@ def start_server(PORT, LOG_NAME):
 
   # Open logfile for writing throughput.
   log = open(LOG_NAME, 'w')
+  log.write('date,bit/s\n')
 
   starttime = datetime.datetime.now()
 
@@ -108,12 +109,12 @@ def start_server(PORT, LOG_NAME):
 	      
         if (delta >= 1):
 	        throughput = bytes_received * 8 / delta;
-	        
-	        print('Throughtput:', throughput)
-
-	        log.write(str(throughput) + '\n')
-	        bytes_received = 0
 	        t1 = datetime.datetime.now()
+	        print(str(t1) + ':' + str(throughput))
+
+	        log.write(str(t1) + ',' + str(throughput) + '\n')
+	        bytes_received = 0
+	        
 
     exit_procedure(count, starttime, datetime.datetime.now(), log)
 
