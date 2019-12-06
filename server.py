@@ -77,17 +77,16 @@ def start_server(PORT):
           select.select([conn,], [conn,], [], 5)
       except select.error:
         conn.shutdown(2)
-        conn.close()
         ready_to_read = 0
         connection_open = False
         break
+      else:
+        if len(ready_to_read) > 0 and connection_open:
+          data = conn.recv(4096)
 
-      if len(ready_to_read) > 0:
-        data = conn.recv(4096)
-
-        count += len(data)
-        print(count)
-        del data
+          count += len(data)
+          print(count)
+          del data
 
     endtime = datetime.datetime.now()
 
