@@ -8,7 +8,6 @@ BUFSIZE = 1455
 def main():
     host = ''
     port = ''
-    logfile = ''
 
     try:
       opts, args = getopt.getopt(sys.argv[1:], 'hpn:v', ['help', 'port=', 'host='])

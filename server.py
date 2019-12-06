@@ -108,7 +108,7 @@ def start_server(PORT, LOG_NAME):
         delta = delta.seconds + delta.microseconds / 1000000.0
 	      
         if (delta >= 1):
-	        throughput = bytes_received * 8 / delta;
+          throughput = bytes_received * 8 / delta;
 	        t1 = datetime.datetime.now()
 	        print(str(t1) + ':' + str(throughput))
 
