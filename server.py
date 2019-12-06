@@ -46,27 +46,15 @@ def start_server(PORT):
   print('Host', HOSTNAME)
   print('')
 
-  HOST = None # Symbolic name meaning all available interfaces
+  HOST = ''   # Symbolic name meaning all available interfaces
   s = None    # socket
-  
-  for res in socket.getaddrinfo(
-    HOST, PORT, socket.AF_UNSPEC,
-    socket.SOCK_STREAM, 0, socket.AI_PASSIVE
-  ):
-    af, socktype, proto, canonname, sa = res
-    try:
-      s = socket.socket(af, socktype, proto)
-    except OSError as msg:
-      s = None
-      continue
-    try:
-      s.bind(sa)
-      s.listen(1)
-    except OSError as msg:
-      s.close()
-      s = None
-      continue
-    break
+  try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, int(PORT)))
+    s.listen(1)
+  except OSError as msg:
+    s.close()
+    s = None
 
   if s is None:
     print('Could not open socket.')
@@ -86,6 +74,7 @@ def start_server(PORT):
       
       if data:
         count += len(data)
+        print(count)
         del data
         continue
 

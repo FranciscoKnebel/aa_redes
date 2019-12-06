@@ -38,7 +38,7 @@ def connect_to_server(HOST, PORT):
   print('Port: ', PORT)
 
   s = None
-  for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
+  for res in socket.getaddrinfo(HOST, PORT, 0, socket.SOCK_STREAM):
     af, socktype, proto, canonname, sa = res
     try:
       print("Establishing socket...")
@@ -67,10 +67,12 @@ def connect_to_server(HOST, PORT):
   with s:
     i = 0
 
-    for i in range(1, 100000):
+    for i in range(0, 5):
       i = i + 1
       s.send(data)
+      print(i)
     
+    time.sleep(10)
     s.close()
 
 main()
