@@ -2,6 +2,7 @@ import socket
 import getopt
 import sys
 import datetime
+import select
 
 def main():
     port = ''
@@ -70,15 +71,22 @@ def start_server(PORT):
 
     count = 0
     while True:
-      data = conn.recv(4096)
-      
-      if data:
+      try:
+        ready_to_read, ready_to_write, in_error = \
+          select.select([conn,], [conn,], [], 5)
+      except select.error:
+        conn.shutdown(2)
+        break
+
+      if len(ready_to_read) > 0:
+        data = conn.recv(4096)
+
         count += len(data)
         print(count)
+        
         del data
         continue
 
-    conn.send('OK\n')
     conn.close()
     endtime = datetime.datetime.now()
 
