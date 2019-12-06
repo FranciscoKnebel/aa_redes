@@ -77,8 +77,12 @@ def start_server(PORT):
           select.select([conn,], [conn,], [], 5)
       except select.error:
         conn.shutdown(2)
+        conn.close()
         ready_to_read = 0
         connection_open = False
+
+        endtime = datetime.datetime.now()
+        exit_procedure(count, starttime, endtime)
         break
       else:
         if len(ready_to_read) > 0 and connection_open:
@@ -88,14 +92,16 @@ def start_server(PORT):
           print(count)
           del data
 
-    endtime = datetime.datetime.now()
 
-    print('Closed connection.')
+def exit_procedure(count, starttime, endtime):
+  print('Closed connection.')
 
-    print('bytes transferred: %d' % count)
-    delta = endtime - starttime
-    delta = delta.seconds + delta.microseconds / 1000000.0
-    print('time used (seconds): %f' % delta)
-    print('averaged speed (MB/s): %f\n\r' % (count / 1024 / 1024 / delta))
+  print('bytes transferred: %d' % count)
+  delta = endtime - starttime
+  delta = delta.seconds + delta.microseconds / 1000000.0
+  print('time used (seconds): %f' % delta)
+  print('averaged speed (MB/s): %f\n\r' % (count / 1024 / 1024 / delta))
+
+  sys.exit(0)
 
 main()
