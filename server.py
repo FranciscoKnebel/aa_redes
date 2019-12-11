@@ -81,6 +81,11 @@ def start_server(PORT, LOG_NAME):
   with conn:
     print('Connected by', addr)
 
+    t1 = datetime.datetime.now()
+    print(str(t1) + ':' + str(0))
+
+    log.write(str(t1) + ',' + str(0) + '\n')
+
     connection_flag = 0
     bytes_received = 0
     count = 0
@@ -109,11 +114,11 @@ def start_server(PORT, LOG_NAME):
 	      
         if (delta >= 1):
           throughput = bytes_received * 8 / delta;
-	        t1 = datetime.datetime.now()
-	        print(str(t1) + ':' + str(throughput))
+          t1 = datetime.datetime.now()
+          print(str(t1) + ':' + str(throughput))
 
-	        log.write(str(t1) + ',' + str(throughput) + '\n')
-	        bytes_received = 0
+          log.write(str(t1) + ',' + str(throughput) + '\n')
+          bytes_received = 0
 	        
 
     exit_procedure(count, starttime, datetime.datetime.now(), log)
