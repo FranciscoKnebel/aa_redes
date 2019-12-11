@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import socket
 import getopt
@@ -30,9 +30,10 @@ def main():
     port = 8080
 
   if (logfile == ''):
-    logfile = 'output.txt'
+    logfile = 'output.csv'
 
-  print('Defined Port:', port)
+  print('Defined port: ' + port)
+  print('Output file: ' + logfile)
   start_server(port, logfile)
 
 
@@ -52,8 +53,8 @@ def start_server(PORT, LOG_NAME):
   HOSTNAME = get_host()
   CONNECTION_LOCATION = HOSTNAME + ':' + str(PORT)
 
-  print('Starting server on port', PORT)
-  print('Host', HOSTNAME)
+  print('Starting server on port ' + str(PORT))
+  print('Host: ' + HOSTNAME)
   print('')
 
   HOST = ''   # Symbolic name meaning all available interfaces
@@ -70,7 +71,7 @@ def start_server(PORT, LOG_NAME):
     print('Could not open socket.')
     sys.exit(1)
 
-  print('Server ready for connections on', CONNECTION_LOCATION)
+  print('Server ready for connections on ' + str(CONNECTION_LOCATION))
 
   conn, addr = s.accept()
 
@@ -126,17 +127,19 @@ def start_server(PORT, LOG_NAME):
     exit_procedure(count, starttime, datetime.datetime.now(), log)
 
 def save_throughput(log, time, throughput):
-  print(str(time) + ':' + str(throughput))
+  print(str(time) + ' - ' + str(throughput))
   log.write(str(time) + ',' + str(throughput) + '\n')
 
 def exit_procedure(count, starttime, endtime, logfile):
   print('Closed connection.')
+  save_throughput(logfile, endtime, 0)
 
-  print('Bytes transferred:', count * BUFSIZE)
+  print('\nBytes transferred:', count * BUFSIZE)
   delta = endtime - starttime
   delta = delta.seconds + delta.microseconds / 1000000.0
   print('Time used (seconds): %f' % delta)
   print('Averaged speed (MB/s): %f\n\r' % (count * BUFSIZE / 1024 / 1024 / delta))
+
 
   logfile.write('\n\nTime used: ' + str(delta))
   logfile.write('\nAverage speed: ' + str((count * BUFSIZE * 8)/delta) + '\n')
