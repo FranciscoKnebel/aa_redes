@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import socket
 import getopt
@@ -35,7 +35,8 @@ def main():
 
   connect_to_server(host, port)
 
-
+i = 0
+starttime = datetime.datetime.now()
 def connect_to_server(HOST, PORT):
   print('Host: ', HOST)
   print('Port: ', PORT)
@@ -65,19 +66,23 @@ def connect_to_server(HOST, PORT):
   print('Server connection successful.')
   print('Sending data...')
   data = bytearray(BUFSIZE)
+
+  global starttime
   starttime = datetime.datetime.now()
+
   with s:
-    i = 0
+    global i
 
     for i in range(0, 100000000):
       i = i + 1
+
       s.sendall(data)
     
     s.close()
     exit_procedure(i, starttime, datetime.datetime.now())
 
 def exit_procedure(count, starttime, endtime):
-  print('Closed connection.')
+  print('\nClosed connection.')
 
   print('Bytes transferred:', count * BUFSIZE)
   delta = endtime - starttime
@@ -85,4 +90,8 @@ def exit_procedure(count, starttime, endtime):
   print('Time used (seconds): %f' % delta)
   print('Averaged speed (MB/s): %f\n\r' % (count * BUFSIZE / 1024 / 1024 / delta))
 
-main()
+
+try:
+  main()
+except (KeyboardInterrupt, SystemExit):
+  exit_procedure(i, starttime, datetime.datetime.now())
