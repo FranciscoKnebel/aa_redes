@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import socket
 import getopt
 import sys
@@ -6,32 +8,32 @@ import datetime
 BUFSIZE = 1455
 
 def main():
-    port = ''
-    logfile = ''
-    try:
-      opts, args = getopt.getopt(sys.argv[1:],'hp:v',['help', 'port=', 'output='])
-    except getopt.GetoptError as err:
+  port = ''
+  logfile = ''
+  try:
+    opts, args = getopt.getopt(sys.argv[1:],'hp:v',['help', 'port=', 'output='])
+  except getopt.GetoptError as err:
+    print('server.py -p <port>')
+    print(err)
+    sys.exit(2)
+
+  for opt, arg in opts:
+    if opt in ('-h', '--help'):
       print('server.py -p <port>')
-      print(err)
-      sys.exit(2)
+      sys.exit()
+    elif opt in ('-p', '--port'):
+      port = arg
+    elif opt in ('-o', '--output'):
+      logfile = arg
 
-    for opt, arg in opts:
-      if opt in ('-h', '--help'):
-        print('server.py -p <port>')
-        sys.exit()
-      elif opt in ('-p', '--port'):
-        port = arg
-      elif opt in ('-o', '--output'):
-        logfile = arg
+  if (port == ''):
+    port = 8080
 
-    if (port == ''):
-      port = 8080
+  if (logfile == ''):
+    logfile = 'output.txt'
 
-    if (logfile == ''):
-      logfile = 'output.txt'
-
-    print('Defined Port:', port)
-    start_server(port, logfile)
+  print('Defined Port:', port)
+  start_server(port, logfile)
 
 
 def get_host():
@@ -82,9 +84,9 @@ def start_server(PORT, LOG_NAME):
     print('Connected by', addr)
 
     t1 = datetime.datetime.now()
-    print(str(t1) + ':' + str(0))
 
-    log.write(str(t1) + ',' + str(0) + '\n')
+    # Set starting time of connection
+    save_throughput(log, t1, 0)
 
     connection_flag = 0
     bytes_received = 0
@@ -112,16 +114,20 @@ def start_server(PORT, LOG_NAME):
         delta = t2 - t1
         delta = delta.seconds + delta.microseconds / 1000000.0
 	      
-        if (delta >= 1):
+        if (delta >= 0.5):
           throughput = bytes_received * 8 / delta;
           t1 = datetime.datetime.now()
-          print(str(t1) + ':' + str(throughput))
 
-          log.write(str(t1) + ',' + str(throughput) + '\n')
+          save_throughput(log, t1, throughput)
+
           bytes_received = 0
 	        
 
     exit_procedure(count, starttime, datetime.datetime.now(), log)
+
+def save_throughput(log, time, throughput):
+  print(str(time) + ':' + str(throughput))
+  log.write(str(time) + ',' + str(throughput) + '\n')
 
 def exit_procedure(count, starttime, endtime, logfile):
   print('Closed connection.')
